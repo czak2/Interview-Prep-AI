@@ -74,11 +74,16 @@ export const AuthProvider = ({ children }) => {
         },
         logout: async () => {
           try {
-            await API.get("/auth/logout");
-          } finally {
             localStorage.removeItem("token");
             setUser(null);
             setIsAuthenticated(false);
+
+            await API.get("/auth/logout");
+
+            window.location.href = "/";
+          } catch (error) {
+            console.error("Logout error:", error);
+            window.location.href = "/";
           }
         },
       }}

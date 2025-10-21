@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -6,10 +6,17 @@ const Header = ({ onOpenLogin }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const isLandingPage = location.pathname === "/";
@@ -63,9 +70,13 @@ const Header = ({ onOpenLogin }) => {
               </div>
               <div
                 onClick={handleLogout}
-                className="text-xs text-orange-500 cursor-pointer hover:text-orange-600"
+                className={`text-xs cursor-pointer ${
+                  isLoggingOut
+                    ? "text-gray-400"
+                    : "text-orange-500 hover:text-orange-600"
+                }`}
               >
-                Logout
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </div>
             </div>
           </div>
